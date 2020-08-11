@@ -26,6 +26,7 @@ fn main() -> Result<(), Error> {
             "publish" => {
                 let nc = nats::connect(&args.server.unwrap())?;
                 nc.publish(&args.subject.unwrap(), &args.message.unwrap())?;
+                nc.flush()?;
             }
             "subscribe" => {
                 let nc = nats::connect(&args.server.unwrap())?;
@@ -44,7 +45,6 @@ fn main() -> Result<(), Error> {
                             let mut child = cmd.spawn()?;
                             {
                                 let stdin = child.stdin.as_mut().unwrap();
-                                // TODO(cm): buffer the writes, make this robust
                                 stdin.write_all(&s.as_bytes())?;
                             }
                             let status = child.wait()?;
